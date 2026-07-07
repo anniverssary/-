@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生 Online｜人生最後的禮物工作坊</title>
+<style>
+/* ================================================================
+   ★ 品牌色設定（想改顏色，改這裡）
+   ================================================================ */
+:root{
+  --blue-l:#C5D3EB;   /* 主色 淺藍 */
+  --blue-d:#1B345D;   /* 副色 深藍 */
+  --grey:#F2F4F4;     /* 副色 淺灰 */
+  --yellow:#F2CA17;   /* 重點色 亮黃 */
+}
+:root{
+  --bg:var(--grey); --ink:var(--blue-d); --soft:#5E6E8C;
+  --card:#FFFFFF; --accent:var(--blue-d); --hl:var(--yellow);
+  --ground:var(--blue-d); --scene:#8FA6CE;
+}
+body[data-stage="2"]{ --bg:var(--blue-l); --card:var(--grey); --soft:#46587D; --scene:#5F7BAE; }
+body[data-stage="3"]{ --bg:var(--blue-d); --ink:var(--grey); --soft:#93A5C6; --card:#24406E;
+  --accent:var(--yellow); --ground:#122443; --scene:#3D5688; }
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
+  font-weight:700; overflow:hidden;
+  transition:background .8s steps(6), color .8s steps(6);
+}
+.px{font-family:"Courier New",monospace;letter-spacing:.12em}
+
+/* ================================================================
+   投影片框架
+   ================================================================ */
+.deck{position:relative;width:100%;height:100%}
+.slide{
+  position:absolute; inset:0; padding:6.5vh 8vw 14vh;
+  display:flex; flex-direction:column; justify-content:center;
+  opacity:0; visibility:hidden;
+  transition:opacity .3s steps(4), visibility 0s .3s;
+}
+.slide.active{opacity:1;visibility:visible;transition:opacity .3s steps(4)}
+.rise{opacity:0;transform:translateY(16px)}
+.slide.active .rise{animation:rise .5s steps(5) forwards;animation-delay:calc(var(--d,0)*.15s)}
+@keyframes rise{to{opacity:1;transform:none}}
+.frag{opacity:0;transform:translateX(-10px);transition:opacity .25s steps(3),transform .25s steps(3)}
+.frag.on{opacity:1;transform:none}
+
+/* ================================================================
+   文字層級
+   ================================================================ */
+.eyebrow{font-size:clamp(13px,1.3vw,17px);letter-spacing:.4em;color:var(--accent);margin-bottom:2.2vh}
+h1{font-size:clamp(36px,5.6vw,76px);line-height:1.3;letter-spacing:.08em;text-shadow:4px 4px 0 var(--hl)}
+body[data-stage="3"] h1{text-shadow:4px 4px 0 rgba(242,202,23,.35)}
+h2{font-size:clamp(27px,3.8vw,50px);line-height:1.4;letter-spacing:.06em;margin-bottom:3.2vh}
+.sub{font-size:clamp(15px,1.7vw,23px);color:var(--soft);margin-top:2.5vh;letter-spacing:.12em;line-height:2}
+p,li{font-size:clamp(15px,1.6vw,21px);line-height:2;letter-spacing:.05em}
+.big-quote{font-size:clamp(24px,3.2vw,44px);line-height:1.95;letter-spacing:.08em}
+.note{color:var(--soft);font-size:clamp(13px,1.2vw,17px);margin-top:3vh;letter-spacing:.08em}
+.hl{background:linear-gradient(transparent 62%, var(--hl) 62%)}
+body[data-stage="3"] .hl{background:none;color:var(--yellow)}
+
+/* ================================================================
+   8-BIT 元件
+   ================================================================ */
+.cards{display:grid;gap:1.8vw;margin-top:1vh}
+.cards.c2{grid-template-columns:1fr 1fr}
+.cards.c3{grid-template-columns:repeat(3,1fr)}
+.cards.c5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--card);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:2.2vh 1.4vw}
+body[data-stage="3"] .card{border-color:var(--blue-l);box-shadow:6px 6px 0 rgba(197,211,235,.35)}
+.card h3{font-size:clamp(15px,1.65vw,22px);margin-bottom:1.1vh;letter-spacing:.08em}
+.card h3::before{content:"■ ";color:var(--yellow)}
+.card p,.card li{font-size:clamp(13px,1.25vw,17px);line-height:1.9}
+.card ul{list-style:none}
+.card ul li::before{content:"▸ ";color:var(--accent)}
+ul.qs{list-style:none}
+ul.qs li{margin:1.5vh 0;padding-left:1.5em;position:relative}
+ul.qs li::before{content:"▶";position:absolute;left:0;color:var(--yellow);text-shadow:1px 1px 0 var(--ink)}
+body[data-stage="3"] ul.qs li::before{text-shadow:none}
+.tag{display:inline-block;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
+  background:var(--yellow);color:var(--blue-d);padding:.35em 1.1em;
+  font-size:clamp(13px,1.2vw,17px);letter-spacing:.25em;margin-bottom:2.4vh}
+.divider{text-align:center;align-items:center}
+.divider .stageNo{font-size:clamp(15px,1.6vw,22px);letter-spacing:.5em;color:var(--accent);margin-bottom:2.4vh}
+.divider .time{margin-top:3vh;color:var(--soft);letter-spacing:.35em;font-size:clamp(13px,1.4vw,18px)}
+.blink{animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.pixart{image-rendering:pixelated;margin-bottom:3vh}
+.pixart rect{shape-rendering:crispEdges}
+.bounce{animation:bounce 1.2s steps(2) infinite}
+@keyframes bounce{50%{transform:translateY(-6px)}}
+.fireA{animation:fA .8s steps(1) infinite}
+.fireB{animation:fB .8s steps(1) infinite}
+@keyframes fA{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes fB{0%,49%{opacity:0}50%,100%{opacity:1}}
+
+/* ================================================================
+   計時器
+   ================================================================ */
+.timer{font-family:"Courier New",monospace;font-size:clamp(56px,10vw,130px);
+  letter-spacing:.08em;font-weight:700;color:var(--yellow);text-shadow:5px 5px 0 rgba(0,0,0,.35)}
+.tbtns{display:flex;gap:1.4vw;justify-content:center;margin-top:2.2vh}
+.tbtns button{font-family:inherit;font-weight:700;font-size:clamp(13px,1.3vw,18px);letter-spacing:.25em;cursor:pointer;
+  padding:.65em 1.7em;border:3px solid var(--blue-l);box-shadow:4px 4px 0 rgba(197,211,235,.4);
+  background:transparent;color:var(--grey)}
+.tbtns button:hover{background:var(--yellow);color:var(--blue-d);border-color:var(--yellow)}
+.tbtns button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(197,211,235,.4)}
+.tbtns button:focus-visible{outline:3px dashed var(--yellow);outline-offset:3px}
+
+/* ================================================================
+   ★ 進度場景：從戶外一路跑回家（右側是家）
+   ================================================================ */
+.scene{position:fixed;left:0;right:0;bottom:0;height:76px;z-index:40;pointer-events:none}
+.ground{position:absolute;left:0;right:0;bottom:0;height:14px;background:var(--ground);
+  border-top:3px solid var(--ink);transition:background .8s steps(6)}
+body[data-stage="3"] .ground{border-top-color:var(--blue-l)}
+.trail{position:absolute;left:0;bottom:11px;height:6px;width:0;background:var(--yellow);transition:width .4s steps(6)}
+.deco{position:absolute;bottom:14px;transition:opacity .8s}
+.runner{position:absolute;bottom:12px;left:0;width:36px;height:48px;
+  transform:translateX(calc((100vw - 150px) * var(--p,0) + 16px));
+  transition:transform .5s steps(8)}
+@media (prefers-reduced-motion:reduce){.runner{transition:none}}
+
+/* ================================================================
+   導覽
+   ================================================================ */
+.nav{position:fixed;right:2.2vw;bottom:92px;display:flex;align-items:center;gap:1vw;z-index:50}
+.nav button{width:46px;height:46px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
+  background:var(--card);color:var(--ink);font-size:20px;font-weight:700;cursor:pointer}
+body[data-stage="3"] .nav button{border-color:var(--blue-l);box-shadow:4px 4px 0 rgba(197,211,235,.35)}
+.nav button:hover{background:var(--yellow);color:var(--blue-d)}
+.nav button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.nav button:focus-visible{outline:3px dashed var(--yellow);outline-offset:3px}
+.count{color:var(--soft);font-family:"Courier New",monospace;font-size:15px;letter-spacing:.15em}
+.hint{position:fixed;left:1.6vw;bottom:96px;color:var(--soft);font-size:12px;letter-spacing:.12em;z-index:50;opacity:.85}
+.cloud{position:fixed;left:1.6vw;top:2.4vh;z-index:60;font-size:12px;letter-spacing:.15em;color:var(--soft);
+  border:2px solid var(--soft);padding:.4em .9em;background:var(--card);opacity:0;transition:opacity .4s}
+.cloud.show{opacity:.95}
+
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:2vw;align-items:stretch;margin-top:1vh}
+.vs .mid{display:flex;align-items:center;color:var(--yellow);font-size:clamp(18px,2vw,26px);
+  letter-spacing:.2em;font-family:"Courier New",monospace;text-shadow:2px 2px 0 var(--ink)}
+
+@media (max-width:820px){
+  .slide{padding:6vh 7vw 16vh}
+  .cards.c2,.cards.c3,.cards.c5{grid-template-columns:1fr}
+  .vs{grid-template-columns:1fr}
+  .vs .mid{justify-content:center}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  .rise,.frag{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body data-stage="1">
+
+<!-- ================================================================
+     ★★★ 雲端內容設定（Google Sheet 即時改字）★★★
+     1. 開一份 Google 試算表，A 欄=代號、B 欄=內容
+        （代號清單見附的「雲端內容範本.csv」，可直接匯入試算表）
+     2. 試算表選「檔案 → 共用 → 發布到網路」→ 選該工作表、
+        格式選「逗號分隔值 (.csv)」→ 發布 → 複製網址
+     3. 把網址貼進下面引號中，存檔即可。
+        留空 = 純離線模式，使用檔案內建文字。
+     ================================================================ -->
+<script>
+var SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQtJWVYzOhd5aejk8ZFumLJ0BcwEz3ZIo6vs6zidcAW31xpvGWv371PvP_Y_oHARR7PXkJECtAhqc0s/pub?gid=0&single=true&output=csv";   /* ← 把發布的 CSV 網址貼在引號裡 */
+</script>
+
+<div class="cloud px" id="cloud"></div>
+
+<div class="deck" id="deck">
+<!-- ============================================================
+     ★ 改文字有兩種方式：
+     A. 雲端：在 Google 試算表改對應「代號」的內容（推薦）
+     B. 本機：直接改下方標籤之間的文字
+     data-key="pX_xxx" 就是試算表裡的代號
+     ============================================================ -->
+
+<!-- ▼▼ 第 1 頁｜標題畫面 ▼▼ -->
+<section class="slide divider" data-stage="1">
+  <svg class="pixart bounce rise" style="--d:0" width="130" height="110" viewBox="0 0 26 22" aria-hidden="true">
+    <rect x="3" y="6" width="20" height="4" fill="#1B345D"/><rect x="4" y="4" width="18" height="2" fill="#1B345D"/>
+    <rect x="6" y="2" width="14" height="2" fill="#1B345D"/><rect x="4" y="10" width="18" height="10" fill="#1B345D"/>
+    <rect x="5" y="11" width="16" height="8" fill="#C5D3EB"/><rect x="11" y="8" width="4" height="6" fill="#F2CA17"/>
+    <rect x="12" y="12" width="2" height="2" fill="#1B345D"/><rect x="6" y="5" width="14" height="1" fill="#F2CA17"/>
+  </svg>
+  <div class="eyebrow rise px" style="--d:1" data-key="p1_eyebrow">RELIFE × 和光里 PRESENTS</div>
+  <h1 class="rise" style="--d:2" data-key="p1_title">人生 Online</h1>
+  <p class="sub rise" style="--d:3" data-key="p1_sub">最終章：人生最後的禮物<br>生前告別體驗 × 生前整理工作坊｜遊戲管理員 GM｜安妮</p>
+  <p class="note blink rise px" style="--d:4" data-key="p1_press">▶ PRESS START（按 → 開始）</p>
+</section>
+
+<!-- ▼▼ 第 2 頁｜系統公告 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p2_eyebrow">SYSTEM MESSAGE｜系統公告</div>
+  <h2 class="rise" style="--d:1" data-key="p2_title">如果今晚，你的角色突然「斷線」——</h2>
+  <ul class="qs">
+    <li class="frag" data-key="p2_q1">你的重要文件，收在哪一個倉庫？隊友找得到嗎？</li>
+    <li class="frag" data-key="p2_q2">你想留下哪些存檔——回憶、故事、想說的話？</li>
+    <li class="frag" data-key="p2_q3">你希望用什麼樣的玩家形象，被大家記得？</li>
+    <li class="frag" data-key="p2_q4">誰有權限替你按下「最後的確認鍵」？他知道你的設定嗎？</li>
+    <li class="frag" data-key="p2_q5">你最重要的隊友，知道接下來該怎麼辦嗎？</li>
+  </ul>
+  <p class="note rise" style="--d:2" data-key="p2_note">今天不急著回答。我們用 90 分鐘，一起把答案玩出來。</p>
+</section>
+
+<!-- ▼▼ 第 3 頁｜關卡選單 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p3_eyebrow">SELECT LEVEL｜今日關卡</div>
+  <h2 class="rise" style="--d:1" data-key="p3_title">不只是談 GAME OVER，<br>而是——<span class="hl">這一局，想怎麼玩？</span></h2>
+  <div class="cards c3">
+    <div class="card frag"><h3 class="px" data-key="p3_c1_t">LEVEL 1・30 分</h3><p data-key="p3_c1_p1">當自己的遺物整理師</p><p style="color:var(--soft)" data-key="p3_c1_p2">玩家下線後，裝備與道具怎麼辦？</p></div>
+    <div class="card frag"><h3 class="px" data-key="p3_c2_t">LEVEL 2・30 分</h3><p data-key="p3_c2_p1">傳承寶箱收納法</p><p style="color:var(--soft)" data-key="p3_c2_p2">動手實作：把人生打包成一個寶箱</p></div>
+    <div class="card frag"><h3 class="px" data-key="p3_c3_t">LEVEL 3・30 分</h3><p data-key="p3_c3_p1">寫信給開寶箱的人</p><p style="color:var(--soft)" data-key="p3_c3_p2">營火存檔點：20 分鐘靜心書寫</p></div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 4 頁｜LEVEL 1 關卡頁 ▼▼ -->
+<section class="slide divider" data-stage="1">
+  <div class="stageNo rise px" style="--d:0" data-key="p4_stage">LEVEL 1</div>
+  <h1 class="rise" style="--d:1" data-key="p4_title">當自己的遺物整理師</h1>
+  <p class="sub rise" style="--d:2" data-key="p4_sub">人生必修學分｜玩家下線之後，裝備與道具怎麼辦？</p>
+  <p class="time rise px" style="--d:3" data-key="p4_time">PLAY TIME 30:00</p>
+</section>
+
+<!-- ▼▼ 第 5 頁｜為什麼要做下線交接 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p5_eyebrow">WHY｜為什麼需要生前整理</div>
+  <h2 class="rise" style="--d:1" data-key="p5_title">生前整理＝玩家親自做的「下線交接」</h2>
+  <p class="rise" style="--d:2" data-key="p5_lead">這是對這一局人生的當責：讓隊友<span class="hl">少一點慌亂</span>，多一點「被照顧」的感受。要交接的帳號資產有五類：</p>
+  <div class="cards c5" style="margin-top:3vh">
+    <div class="card frag"><h3 data-key="p5_c1_t">道具背包</h3><p data-key="p5_c1_p">物品彙整：留下、傳承、放手</p></div>
+    <div class="card frag"><h3 data-key="p5_c2_t">雲端倉庫</h3><p data-key="p5_c2_p">數位資訊：照片、帳號、雲端資料</p></div>
+    <div class="card frag"><h3 data-key="p5_c3_t">金幣與契約</h3><p data-key="p5_c3_p">財務與文件：保單、存摺、證件</p></div>
+    <div class="card frag"><h3 data-key="p5_c4_t">隊友關係</h3><p data-key="p5_c4_p">道謝、道歉、道愛、道別</p></div>
+    <div class="card frag"><h3 data-key="p5_c5_t">下線設定</h3><p data-key="p5_c5_p">身後安排：醫療意願、告別式期待</p></div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 6 頁｜隊友面對什麼 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p6_eyebrow">HARD MODE｜遺物整理的真實現場</div>
+  <h2 class="rise" style="--d:1" data-key="p6_title">玩家斷線後，留在線上的隊友面對什麼？</h2>
+  <div class="cards c2">
+    <div class="card frag">
+      <h3 data-key="p6_c1_t">物理難題：背包 9999＋</h3>
+      <ul>
+        <li data-key="p6_c1_li1">一生累積的道具數量爆表，不知從何清點</li>
+        <li data-key="p6_c1_li2">沒有攻略本：分不出神裝和垃圾裝</li>
+        <li data-key="p6_c1_li3">限時任務壓力：退租、房屋處分倒數中</li>
+        <li data-key="p6_c1_li4">關鍵道具（證件文件）藏在不明地圖</li>
+      </ul>
+    </div>
+    <div class="card frag">
+      <h3 data-key="p6_c2_t">心理難題：悲傷 Debuff</h3>
+      <ul>
+        <li data-key="p6_c2_li1">每件道具，都是一起冒險的記憶</li>
+        <li data-key="p6_c2_li2">「刪除」帶來的罪惡感</li>
+        <li data-key="p6_c2_li3">隊伍內鬨：留與不留，意見分歧</li>
+        <li data-key="p6_c2_li4">悲傷狀態中，決策力歸零</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 7 頁｜隊友需要的攻略包 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p7_eyebrow">SURVIVAL KIT｜很少人告訴我們的事</div>
+  <h2 class="rise" style="--d:1" data-key="p7_title">服喪期間，隊友其實在瘋狂「找道具」</h2>
+  <div class="cards c3">
+    <div class="card frag"><h3 data-key="p7_c1_t">帳號證明</h3><ul><li data-key="p7_c1_li1">身分證、印鑑、戶籍資料</li><li data-key="p7_c1_li2">保單、存摺、權狀</li></ul></div>
+    <div class="card frag"><h3 data-key="p7_c2_t">玩家設定檔</h3><ul><li data-key="p7_c2_li1">醫療意願</li><li data-key="p7_c2_li2">告別式期待、遺照與服裝</li></ul></div>
+    <div class="card frag"><h3 data-key="p7_c3_t">好友名單與密碼</h3><ul><li data-key="p7_c3_li1">想通知的人、重要聯絡人</li><li data-key="p7_c3_li2">手機與各帳號密碼</li></ul></div>
+  </div>
+  <p class="note frag" data-key="p7_note">如果這些道具都「找得到」，隊友就能把 HP 留下來，專心做一件事——<span class="hl">好好道別</span>。</p>
+</section>
+
+<!-- ▼▼ 第 8 頁｜案例：兩種登出 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p8_eyebrow">REPLAY｜案例分享</div>
+  <h2 class="rise" style="--d:1" data-key="p8_title">兩種登出方式，兩種隊友心情</h2>
+  <div class="vs">
+    <div class="card frag">
+      <h3 data-key="p8_c1_t">無預警斷線</h3>
+      <p style="margin-bottom:1vh" data-key="p8_c1_sub">K 媽媽的突然離世</p>
+      <ul>
+        <li data-key="p8_c1_li1">保單、密碼、文件座標全部未知</li>
+        <li data-key="p8_c1_li2">隊友在悲傷 Debuff 中被支線任務淹沒</li>
+        <li data-key="p8_c1_li3">「她會希望怎麼做？」——沒有人有答案</li>
+      </ul>
+    </div>
+    <div class="mid" data-key="p8_mid">VS</div>
+    <div class="card frag">
+      <h3 data-key="p8_c2_t">提前交接的登出</h3>
+      <p style="margin-bottom:1vh" data-key="p8_c2_sub">L 教授・化療前預約生前整理</p>
+      <ul>
+        <li data-key="p8_c2_li1">親自決定每一件裝備的去向</li>
+        <li data-key="p8_c2_li2">留下地圖、清單與想說的話</li>
+        <li data-key="p8_c2_li3">隊友少了慌亂，多了被愛的證明</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 9 頁｜LEVEL 1 小結 ▼▼ -->
+<section class="slide" data-stage="1">
+  <div class="eyebrow rise px" style="--d:0" data-key="p9_eyebrow">LEVEL 1 CLEAR</div>
+  <p class="big-quote rise" style="--d:1" data-key="p9_quote">掉落的裝備，可以是隊友的負擔，<br>也可以是傳承的神裝。<br><span class="hl">差別在於——我們有沒有先做交接。</span></p>
+</section>
+
+<!-- ▼▼ 第 10 頁｜LEVEL 2 關卡頁 ▼▼ -->
+<section class="slide divider" data-stage="2">
+  <div class="stageNo rise px" style="--d:0" data-key="p10_stage">LEVEL 2</div>
+  <h1 class="rise" style="--d:1" data-key="p10_title">傳承寶箱收納法</h1>
+  <p class="sub rise" style="--d:2" data-key="p10_sub">實作工作坊｜把人生，打包成一個給隊友的寶箱</p>
+  <p class="time rise px" style="--d:3" data-key="p10_time">PLAY TIME 30:00</p>
+</section>
+
+<!-- ▼▼ 第 11 頁｜寶箱是什麼 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="eyebrow rise px" style="--d:0" data-key="p11_eyebrow">ITEM｜核心道具</div>
+  <h2 class="rise" style="--d:1" data-key="p11_title">它不是遺物箱，<br>是你留給隊友的<span class="hl">獎勵寶箱</span></h2>
+  <p class="rise" style="--d:2" data-key="p11_lead">裡面裝著三樣東西：</p>
+  <div class="cards c3">
+    <div class="card frag"><h3 data-key="p11_c1_t">一段冒險軌跡</h3><p data-key="p11_c1_p">你想被記住的玩家故事</p></div>
+    <div class="card frag"><h3 data-key="p11_c2_t">一份託付</h3><p data-key="p11_c2_p">想交給下一位玩家的心意與交代</p></div>
+    <div class="card frag"><h3 data-key="p11_c3_t">一份體貼</h3><p data-key="p11_c3_p">幫隊友跳過的解謎關卡——省去的煩惱</p></div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 12 頁｜寶箱五格 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="eyebrow rise px" style="--d:0" data-key="p12_eyebrow">INVENTORY｜寶箱的五個格子</div>
+  <h2 class="rise" style="--d:1" data-key="p12_title">一個寶箱，裝下一整局人生</h2>
+  <div class="cards c5">
+    <div class="card frag"><h3 data-key="p12_c1_t">① 回憶存檔</h3><p data-key="p12_c1_p">老照片、人生故事、家族記憶、想留下的物品</p></div>
+    <div class="card frag"><h3 data-key="p12_c2_t">② 藏寶地圖</h3><p data-key="p12_c2_p">重要文件的存放位置、保單與帳號清單</p></div>
+    <div class="card frag"><h3 data-key="p12_c3_t">③ 下線設定</h3><p data-key="p12_c3_p">醫療意願、告別式期待、遺照與服裝、想通知的人</p></div>
+    <div class="card frag"><h3 data-key="p12_c4_t">④ 隊友信件</h3><p data-key="p12_c4_p">手寫信、錄音、錄影</p></div>
+    <div class="card frag"><h3 data-key="p12_c5_t">⑤ 記憶卡</h3><p data-key="p12_c5_p">照片電子化、數位帳號整理</p></div>
+  </div>
+</section>
+
+<!-- ▼▼ 第 13 頁｜A 放什麼 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="tag rise px" style="--d:0" data-key="p13_tag">A・放什麼</div>
+  <h2 class="rise" style="--d:1" data-key="p13_title">哪些裝備，值得放進傳承寶箱？</h2>
+  <ul class="qs">
+    <li class="frag" data-key="p13_q1">哪些裝備與道具，值得傳承給下一位玩家？</li>
+    <li class="frag" data-key="p13_q2">我希望隊友記得我的哪一段冒險？</li>
+    <li class="frag" data-key="p13_q3">哪些故事，值得寫進攻略本留下來？</li>
+  </ul>
+  <p class="note rise" style="--d:2" data-key="p13_note">提示：值得傳承的不是「最稀有的」，而是「最像你的」。</p>
+</section>
+
+<!-- ▼▼ 第 14 頁｜B 交給誰 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="tag rise px" style="--d:0" data-key="p14_tag">B・交給誰</div>
+  <h2 class="rise" style="--d:1" data-key="p14_title">指定你的「開箱玩家」</h2>
+  <ul class="qs">
+    <li class="frag" data-key="p14_q1">開箱的人是誰？為什麼把寶箱交給他？</li>
+    <li class="frag" data-key="p14_q2">寶箱的座標在哪？他知道嗎？——沒有人知道座標的寶箱，等於不存在</li>
+    <li class="frag" data-key="p14_q3">你希望他開箱的那一刻，跳出什麼感受？安心？被愛？會心一笑？</li>
+  </ul>
+</section>
+
+<!-- ▼▼ 第 15 頁｜QUEST 1 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="eyebrow rise px" style="--d:0" data-key="p15_eyebrow">QUEST 1｜人生存檔盤點表</div>
+  <h2 class="rise" style="--d:1" data-key="p15_title">先清點背包，才知道要放什麼</h2>
+  <div class="cards c5">
+    <div class="card frag"><h3 data-key="p15_c1_t">重要文件</h3><p data-key="p15_c1_p">藏在哪、交給誰</p></div>
+    <div class="card frag"><h3 data-key="p15_c2_t">重要帳號</h3><p data-key="p15_c2_p">希望怎麼處理</p></div>
+    <div class="card frag"><h3 data-key="p15_c3_t">重要隊友</h3><p data-key="p15_c3_p">想道謝、道愛的人</p></div>
+    <div class="card frag"><h3 data-key="p15_c4_t">重要裝備</h3><p data-key="p15_c4_p">去向與它的故事</p></div>
+    <div class="card frag"><h3 data-key="p15_c5_t">未完成任務</h3><p data-key="p15_c5_p">還想解的支線心願</p></div>
+  </div>
+  <p class="note rise" style="--d:2" data-key="p15_note">請拿出【生命整理盤點】任務卷軸，每格先寫 1～2 項就好。限時 8 分鐘。</p>
+</section>
+
+<!-- ▼▼ 第 16 頁｜QUEST 2 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="eyebrow rise px" style="--d:0" data-key="p16_eyebrow">QUEST 2｜數位檔案與記憶卡</div>
+  <h2 class="rise" style="--d:1" data-key="p16_title">兩張記憶卡：一張整理中，一張放進寶箱</h2>
+  <div class="cards c3">
+    <div class="card frag"><h3 data-key="p16_c1_t">STEP 1 集中</h3><p data-key="p16_c1_p">把手機、電腦、雲端的照片，先傳送到同一張地圖</p></div>
+    <div class="card frag"><h3 data-key="p16_c2_t">STEP 2 挑選</h3><p data-key="p16_c2_p">個人照、回憶照分類——選「有故事的」，不是全部。一萬張是負擔，一百張是禮物</p></div>
+    <div class="card frag"><h3 data-key="p16_c3_t">STEP 3 電子化</h3><p data-key="p16_c3_p">老照片掃描或翻拍；文件資訊建成清楚的資料夾</p></div>
+  </div>
+  <p class="note frag" data-key="p16_note">資料夾命名：01 個人照片／02 回憶照片／03 文件資訊——讓開箱玩家<span class="hl">一眼就懂</span>。</p>
+</section>
+
+<!-- ▼▼ 第 17 頁｜每日任務 ▼▼ -->
+<section class="slide" data-stage="2">
+  <div class="eyebrow rise px" style="--d:0" data-key="p17_eyebrow">DAILY QUEST｜回家之後</div>
+  <h2 class="rise" style="--d:1" data-key="p17_title">五個每日任務，讓感動升級成行動</h2>
+  <ul class="qs">
+    <li class="frag" data-key="p17_q1">準備一個實體寶箱（家裡任何有蓋的盒子都行）</li>
+    <li class="frag" data-key="p17_q2">補完盤點表，建立你的藏寶地圖（文件清單）</li>
+    <li class="frag" data-key="p17_q3">指定一位信任的開箱玩家——並且告訴他寶箱座標</li>
+    <li class="frag" data-key="p17_q4">整理數位帳號與照片，用那兩張記憶卡</li>
+    <li class="frag" data-key="p17_q5">今天就放進第一件道具——按下開始，任務就不難了</li>
+  </ul>
+</section>
+
+<!-- ▼▼ 第 18 頁｜FINAL LEVEL 關卡頁 ▼▼ -->
+<section class="slide divider" data-stage="3">
+  <div class="stageNo rise px" style="--d:0" data-key="p18_stage">FINAL LEVEL</div>
+  <h1 class="rise" style="--d:1" data-key="p18_title">寫信給開寶箱的人</h1>
+  <p class="sub rise" style="--d:2" data-key="p18_sub">營火存檔點｜靜心書寫與存檔儀式</p>
+  <p class="time rise px" style="--d:3" data-key="p18_time">PLAY TIME 30:00</p>
+</section>
+
+<!-- ▼▼ 第 19 頁｜手寫卡片 ▼▼ -->
+<section class="slide" data-stage="3">
+  <div class="eyebrow rise px" style="--d:0" data-key="p19_eyebrow">BEFORE WRITING｜書寫之前</div>
+  <h2 class="rise" style="--d:1" data-key="p19_title">這不是遺囑，<br>是寶箱裡那張<span class="hl">手寫的卡片</span></h2>
+  <p class="rise" style="--d:2" data-key="p19_lead">想像有一天，那位重要的隊友打開了你的寶箱——寫的時候，順著這五題走：</p>
+  <ul class="qs">
+    <li class="frag" data-key="p19_q1">為什麼是他？為什麼把寶箱交給他？</li>
+    <li class="frag" data-key="p19_q2">你希望他知道什麼？</li>
+    <li class="frag" data-key="p19_q3">你希望他感受到什麼？</li>
+    <li class="frag" data-key="p19_q4">你想對他說什麼？道謝、道歉、道愛，或道別</li>
+    <li class="frag" data-key="p19_q5">你希望他如何使用這個寶箱？</li>
+  </ul>
+</section>
+
+<!-- ▼▼ 第 20 頁｜營火存檔點（計時器） ▼▼ -->
+<section class="slide divider" data-stage="3" id="writeSlide">
+  <div class="eyebrow rise px" style="--d:0" data-key="p20_eyebrow">SAVE POINT｜營火存檔點・靜心書寫</div>
+  <svg class="pixart rise" style="--d:1" width="120" height="110" viewBox="0 0 24 22" aria-hidden="true">
+    <g class="fireA">
+      <rect x="10" y="3" width="4" height="3" fill="#F2CA17"/><rect x="8" y="6" width="8" height="4" fill="#F2CA17"/>
+      <rect x="7" y="10" width="10" height="4" fill="#E8A012"/><rect x="11" y="1" width="2" height="2" fill="#F2CA17"/>
+    </g>
+    <g class="fireB">
+      <rect x="9" y="4" width="6" height="3" fill="#F2CA17"/><rect x="7" y="7" width="10" height="4" fill="#F2CA17"/>
+      <rect x="8" y="11" width="8" height="3" fill="#E8A012"/><rect x="13" y="2" width="2" height="2" fill="#F2CA17"/>
+    </g>
+    <rect x="3" y="15" width="18" height="3" fill="#C5D3EB"/><rect x="5" y="18" width="14" height="2" fill="#93A5C6"/>
+  </svg>
+  <div class="timer rise" id="timer" style="--d:2">20:00</div>
+  <div class="tbtns rise" style="--d:3">
+    <button id="tStart">▶ 開始</button>
+    <button id="tPause">‖ 暫停</button>
+    <button id="tReset">↺ 重設</button>
+  </div>
+  <p class="note rise" style="--d:4" data-key="p20_note">不必寫得完美。可以停筆、可以流淚、可以只寫一句話。這裡是存檔點，很安全。</p>
+</section>
+
+<!-- ▼▼ 第 21 頁｜存檔儀式 ▼▼ -->
+<section class="slide" data-stage="3">
+  <div class="eyebrow rise px" style="--d:0" data-key="p21_eyebrow">SAVE｜存檔儀式</div>
+  <h2 class="rise" style="--d:1" data-key="p21_title">把這封信，存成寶箱裡的第一件道具</h2>
+  <ul class="qs">
+    <li class="frag" data-key="p21_q1">在信封上，寫下開寶箱的人的名字</li>
+    <li class="frag" data-key="p21_q2">封上信封＝按下存檔——不是結束，是「我開始為你準備了」的承諾</li>
+    <li class="frag" data-key="p21_q3">把信握在手心，閉上眼，在心裡送給他一句祝福</li>
+  </ul>
+</section>
+
+<!-- ▼▼ 第 22 頁｜收尾 ▼▼ -->
+<section class="slide" data-stage="3">
+  <div class="eyebrow rise px" style="--d:0" data-key="p22_eyebrow">ENDING｜回饋與收尾</div>
+  <p class="big-quote rise" style="--d:1" data-key="p22_quote">因為知道遊戲有結局，<br>所以更認真地，<span class="hl">玩好現在這一局</span>。</p>
+  <p class="note rise" style="--d:2" data-key="p22_note">邀請你，用一個詞，說說此刻的狀態欄顯示什麼。</p>
+</section>
+
+<!-- ▼▼ 第 23 頁｜成就解鎖 ▼▼ -->
+<section class="slide divider" data-stage="3">
+  <div class="eyebrow rise px" style="--d:0" data-key="p23_eyebrow">★ ACHIEVEMENT UNLOCKED ★</div>
+  <h1 class="rise" style="--d:1" data-key="p23_title">成就解鎖：<br>開始整理人生</h1>
+  <p class="sub rise" style="--d:2" data-key="p23_sub">帶著你的信、任務卷軸、兩張記憶卡回家——也帶著「開始」。<br>ReLife 生活再設計 × 和光里｜GM 安妮</p>
+  <p class="note blink rise px" style="--d:3" data-key="p23_press">CONTINUE?　▶ YES，從今天開始</p>
+</section>
+
+<!-- ▲▲ 投影片內容到此結束 ▲▲ -->
+</div>
+
+<!-- ★ 進度場景：戶外 →（向右跑）→ 家 -->
+<div class="scene" aria-hidden="true">
+  <div class="ground"></div>
+  <div class="trail" id="trail"></div>
+
+  <!-- 沿路的樹（戶外） -->
+  <svg class="deco" style="left:4%" width="40" height="52" viewBox="0 0 10 13"><g fill="var(--scene)"><rect x="3" y="1" width="4" height="2"/><rect x="2" y="3" width="6" height="3"/><rect x="1" y="6" width="8" height="3"/></g><rect x="4" y="9" width="2" height="4" fill="var(--ground)"/></svg>
+  <svg class="deco" style="left:22%" width="32" height="44" viewBox="0 0 10 13"><g fill="var(--scene)"><rect x="3" y="1" width="4" height="2"/><rect x="2" y="3" width="6" height="3"/><rect x="1" y="6" width="8" height="3"/></g><rect x="4" y="9" width="2" height="4" fill="var(--ground)"/></svg>
+  <svg class="deco" style="left:45%" width="40" height="52" viewBox="0 0 10 13"><g fill="var(--scene)"><rect x="3" y="1" width="4" height="2"/><rect x="2" y="3" width="6" height="3"/><rect x="1" y="6" width="8" height="3"/></g><rect x="4" y="9" width="2" height="4" fill="var(--ground)"/></svg>
+  <!-- 路燈（中後段） -->
+  <svg class="deco" style="left:68%" width="26" height="60" viewBox="0 0 8 18"><rect x="3" y="4" width="2" height="14" fill="var(--scene)"/><rect x="2" y="2" width="4" height="3" fill="#F2CA17"/></svg>
+
+  <!-- 終點：家 -->
+  <svg class="deco" style="right:10px" width="86" height="72" viewBox="0 0 22 18">
+    <rect x="3" y="8" width="16" height="9" fill="var(--scene)"/>
+    <rect x="1" y="6" width="20" height="2" fill="var(--ground)"/>
+    <rect x="4" y="4" width="14" height="2" fill="var(--ground)"/>
+    <rect x="7" y="2" width="8" height="2" fill="var(--ground)"/>
+    <rect x="6" y="10" width="4" height="4" fill="#F2CA17"/>
+    <rect x="13" y="10" width="4" height="7" fill="var(--ground)"/>
+    <rect x="16" y="13" width="1" height="1" fill="#F2CA17"/>
+  </svg>
+
+  <!-- 跑步的小人（兩幀跑步動畫） -->
+  <svg class="runner" viewBox="0 0 12 16" aria-hidden="true">
+    <g class="fireA"><!-- 跑步幀 1 -->
+      <rect x="4" y="1" width="4" height="4" fill="var(--ink)"/>
+      <rect x="4" y="5" width="4" height="5" fill="#F2CA17"/>
+      <rect x="2" y="6" width="2" height="2" fill="var(--ink)"/>
+      <rect x="8" y="4" width="2" height="2" fill="var(--ink)"/>
+      <rect x="3" y="10" width="2" height="4" fill="var(--ink)"/>
+      <rect x="7" y="10" width="2" height="3" fill="var(--ink)"/>
+      <rect x="8" y="13" width="2" height="1" fill="var(--ink)"/>
+    </g>
+    <g class="fireB"><!-- 跑步幀 2 -->
+      <rect x="4" y="1" width="4" height="4" fill="var(--ink)"/>
+      <rect x="4" y="5" width="4" height="5" fill="#F2CA17"/>
+      <rect x="2" y="4" width="2" height="2" fill="var(--ink)"/>
+      <rect x="8" y="6" width="2" height="2" fill="var(--ink)"/>
+      <rect x="5" y="10" width="2" height="4" fill="var(--ink)"/>
+      <rect x="7" y="10" width="2" height="4" fill="var(--ink)"/>
+    </g>
+  </svg>
+</div>
+
+<div class="hint">← → 翻頁・空白鍵逐條顯示</div>
+<div class="nav">
+  <span class="count px" id="count">1 / 23</span>
+  <button id="prev" aria-label="上一頁">‹</button>
+  <button id="next" aria-label="下一頁">›</button>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var idx=0, count=document.getElementById('count');
+  var runner=document.querySelector('.runner'), trail=document.getElementById('trail');
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function frags(s){return [].slice.call(s.querySelectorAll('.frag'))}
+  function show(i){
+    idx=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach(function(s,k){s.classList.toggle('active',k===idx)});
+    document.body.setAttribute('data-stage',slides[idx].getAttribute('data-stage')||'1');
+    var p=idx/(slides.length-1);
+    runner.style.setProperty('--p',p);                    /* 小人往右跑回家 */
+    trail.style.width='calc((100vw - 150px) * '+p+' + 24px)'; /* 走過的路 */
+    count.textContent=(idx+1)+' / '+slides.length;
+    location.hash='#'+(idx+1);
+  }
+  function next(){
+    var f=frags(slides[idx]).filter(function(e){return !e.classList.contains('on')});
+    if(f.length && !reduced){f[0].classList.add('on');return}
+    if(f.length){f.forEach(function(e){e.classList.add('on')});return}
+    show(idx+1);
+  }
+  function prev(){
+    var on=frags(slides[idx]).filter(function(e){return e.classList.contains('on')});
+    if(on.length){on[on.length-1].classList.remove('on');return}
+    show(idx-1);
+    frags(slides[idx]).forEach(function(e){e.classList.add('on')});
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next()}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+    else if(e.key==='Home'){show(0)}
+    else if(e.key==='End'){show(slides.length-1)}
+  });
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+
+  var x0=null;
+  document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(x0===null)return;
+    var dx=e.changedTouches[0].clientX-x0;
+    if(dx<-50)next(); else if(dx>50)prev();
+    x0=null;
+  },{passive:true});
+
+  /* ===== 20 分鐘計時器（改長度：把 20*60 換成想要的秒數） ===== */
+  var TOTAL=20*60, left=TOTAL, tick=null;
+  var tEl=document.getElementById('timer');
+  function fmt(s){var m=Math.floor(s/60),ss=s%60;return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss}
+  function render(){tEl.textContent=fmt(left)}
+  function bell(){
+    try{
+      var ctx=new (window.AudioContext||window.webkitAudioContext)();
+      [0,1.2,2.4].forEach(function(t){
+        var o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='square';o.frequency.value=660;
+        g.gain.setValueAtTime(0.0001,ctx.currentTime+t);
+        g.gain.exponentialRampToValueAtTime(0.12,ctx.currentTime+t+0.04);
+        g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+t+0.9);
+        o.connect(g).connect(ctx.destination);
+        o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+1);
+      });
+    }catch(e){}
+  }
+  document.getElementById('tStart').addEventListener('click',function(){
+    if(tick)return;
+    tick=setInterval(function(){
+      left--;render();
+      if(left<=0){clearInterval(tick);tick=null;left=0;render();bell()}
+    },1000);
+  });
+  document.getElementById('tPause').addEventListener('click',function(){clearInterval(tick);tick=null});
+  document.getElementById('tReset').addEventListener('click',function(){clearInterval(tick);tick=null;left=TOTAL;render()});
+  render();
+
+  var h=parseInt((location.hash||'').replace('#',''),10);
+  show(isNaN(h)?0:h-1);
+
+  /* ===== ☁ 雲端內容：讀取 Google Sheet 發布的 CSV ===== */
+  function parseCSV(text){
+    var rows=[],row=[],cur='',q=false;
+    for(var i=0;i<text.length;i++){
+      var c=text[i];
+      if(q){
+        if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
+        else cur+=c;
+      }else{
+        if(c==='"')q=true;
+        else if(c===','){row.push(cur);cur='';}
+        else if(c==='\n'||c==='\r'){
+          if(c==='\r'&&text[i+1]==='\n')i++;
+          row.push(cur);cur='';
+          if(row.length>1||row[0]!=='')rows.push(row);
+          row=[];
+        }
+        else cur+=c;
+      }
+    }
+    if(cur!==''||row.length){row.push(cur);rows.push(row);}
+    return rows;
+  }
+  function toast(msg){
+    var el=document.getElementById('cloud');
+    el.textContent=msg;el.classList.add('show');
+    setTimeout(function(){el.classList.remove('show')},4000);
+  }
+  if(SHEET_CSV_URL){
+    fetch(SHEET_CSV_URL+(SHEET_CSV_URL.indexOf('?')>-1?'&':'?')+'t='+Date.now())
+      .then(function(r){if(!r.ok)throw 0;return r.text()})
+      .then(function(txt){
+        var rows=parseCSV(txt),n=0;
+        rows.forEach(function(r){
+          var key=(r[0]||'').trim(), val=(r[1]||'');
+          if(!key||key==='代號'||key==='key')return;
+          var el=document.querySelector('[data-key="'+key+'"]');
+          if(el){el.innerHTML=val.replace(/\n/g,'<br>');n++;}
+        });
+        if(n)toast('☁ 雲端內容已載入（'+n+' 筆）');
+      })
+      .catch(function(){toast('⚠ 無法連線雲端，使用內建文字')});
+  }
+})();
+</script>
+</body>
+</html>
